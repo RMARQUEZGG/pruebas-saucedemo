@@ -30,9 +30,9 @@ const CONTRASENA = 'secret_sauce';
 
 // Guardamos los datos del cliente en un objeto para reutilizarlos
 const CLIENTE = {
-  nombre:       'Juan',
-  apellido:     'Pérez',
-  codigoPostal: '10001',
+  nombre:       'Rocio',
+  apellido:     'Marquez',
+  codigoPostal: '553000',
 };
 
 const PRODUCTO_1 = 'Sauce Labs Backpack';

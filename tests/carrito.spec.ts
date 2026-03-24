@@ -31,6 +31,7 @@ const CONTRASENA = 'secret_sauce';
 const PRODUCTO_1 = 'Sauce Labs Backpack';
 const PRODUCTO_2 = 'Sauce Labs Bike Light';
 const PRODUCTO_3 = 'Sauce Labs Bolt T-Shirt';
+const PRODUCTO_4 = 'Sauce Labs Bolt T-Shirt';
 
 // ----------------------------------------------------------------
 // 🔧 FUNCIÓN AUXILIAR — Login
@@ -112,7 +113,7 @@ test('🛒 Agregar tres productos al carrito', async ({ page }) => {
   await agregarAlCarrito(page, PRODUCTO_1);
   await agregarAlCarrito(page, PRODUCTO_2);
   await agregarAlCarrito(page, PRODUCTO_3);
-
+  await agregarAlCarrito(page, PRODUCTO_4);
   // El badge debe mostrar "3"
   await expect(page.locator('.shopping_cart_badge')).toHaveText('3');
 });
