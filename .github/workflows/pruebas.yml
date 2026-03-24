@@ -1,0 +1,81 @@
+# ================================================================
+# CI/CD — GitHub Actions
+# ================================================================
+#
+# Este archivo le dice a GitHub QUÉ hacer automáticamente.
+#
+# ¿Cuándo se ejecuta?
+#   - Cada vez que haces "git push" a la rama main
+#   - Cada vez que abres un Pull Request hacia main
+#
+# ¿Qué hace?
+#   1. Crea una máquina virtual limpia en los servidores de GitHub
+#   2. Descarga tu código
+#   3. Instala Node.js y las dependencias
+#   4. Instala el navegador Chromium
+#   5. Corre todas las pruebas
+#   6. Guarda el reporte como artefacto descargable
+# ================================================================
+
+name: Pruebas Automatizadas con Playwright
+
+# ── Cuándo ejecutar este workflow ────────────────────────────────
+on:
+  push:
+    branches: [ main ]        # al hacer push a main
+  pull_request:
+    branches: [ main ]        # al abrir un Pull Request a main
+
+# ── Qué hacer ────────────────────────────────────────────────────
+jobs:
+  pruebas:
+    # Tipo de máquina virtual que usará GitHub
+    # ubuntu-latest es gratuito y más que suficiente
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # PASO 1: Descargar el código del repositorio
+      - name: Descargar código
+        uses: actions/checkout@v4
+
+      # PASO 2: Instalar Node.js versión 20
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          # Guarda las dependencias en caché para que las siguientes
+          # ejecuciones sean más rápidas
+          cache: 'npm'
+
+      # PASO 3: Instalar las dependencias del proyecto (npm install)
+      - name: Instalar dependencias
+        run: npm ci
+        # "npm ci" es como "npm install" pero más estricto y rápido
+        # Ideal para entornos de CI/CD
+
+      # PASO 4: Instalar solo el navegador Chromium de Playwright
+      # (instalar todos los navegadores tomaría más tiempo)
+      - name: Instalar navegador Chromium
+        run: npx playwright install chromium --with-deps
+        # "--with-deps" instala también las dependencias del sistema
+        # que necesita Chromium para funcionar en Linux
+
+      # PASO 5: Correr todas las pruebas
+      - name: Correr pruebas
+        run: npx playwright test
+        # Las pruebas corren en modo headless (sin ventana visible)
+        # porque es un servidor sin pantalla
+
+      # PASO 6: Guardar el reporte como artefacto
+      # Esto permite descargar el reporte desde GitHub aunque las pruebas fallen
+      - name: Guardar reporte HTML
+        uses: actions/upload-artifact@v4
+        if: always()
+        # "if: always()" significa: guarda el reporte SIEMPRE,
+        # aunque las pruebas hayan fallado — así puedes ver qué pasó
+        with:
+          name: reporte-playwright
+          path: playwright-report/
+          retention-days: 30
+          # El reporte estará disponible para descargar por 30 días
